@@ -22,6 +22,7 @@ tag_format = "$version"
 version_scheme = "semver2"
 version_provider = "uv"
 update_changelog_on_bump = true
+breaking_change_exclamation_in_title = true
 
 [tool.ruff.lint]
 extend-select = ["ANN"]
