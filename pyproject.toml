@@ -30,4 +30,9 @@ extend-select = ["ANN"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+]
+
 
