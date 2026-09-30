@@ -19,7 +19,7 @@ build-backend = "uv_build"
 [tool.commitizen]
 name = "cz_conventional_commits"
 tag_format = "$version"
-version_scheme = "semver2"
+version_scheme = "pep440"
 version_provider = "uv"
 update_changelog_on_bump = true
 breaking_change_exclamation_in_title = true
