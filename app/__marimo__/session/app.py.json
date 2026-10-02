@@ -1,0 +1,151 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.25.1",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "f1a90f6e7c0723b8b3dbe8e4b813435e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "a1bdfc0225067392095532cc299e9b3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "LgHd",
+      "code_hash": "d0f6e71e8f5599f1ee93880f5cf5e190",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"habitat-analysis\">Habitat Analysis</h1></span><span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Upload image and its mask.</span></span><marimo-ui-element object-id='MJUe-0' random-id='a344aa74-5463-16fe-558f-f947517702de'><marimo-file data-initial-value='[]' data-label='&quot;&#92;u003cspan class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&#92;u003e&#92;u003cspan class=&#92;&quot;paragraph&#92;&quot;&#92;u003eUpload Image&#92;u003c/span&#92;u003e&#92;u003c/span&#92;u003e&quot;' data-filetypes='[]' data-multiple='false' data-kind='&quot;area&quot;' data-max_size='100000000'></marimo-file></marimo-ui-element><marimo-ui-element object-id='MJUe-1' random-id='0bf0c2be-403a-58a4-e3f4-fc10fee5b71a'><marimo-file data-initial-value='[]' data-label='&quot;&#92;u003cspan class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&#92;u003e&#92;u003cspan class=&#92;&quot;paragraph&#92;&quot;&#92;u003eUpload Mask&#92;u003c/span&#92;u003e&#92;u003c/span&#92;u003e&quot;' data-filetypes='[]' data-multiple='false' data-kind='&quot;area&quot;' data-max_size='100000000'></marimo-file></marimo-ui-element></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "fjgr",
+      "code_hash": "af1f6a05960bd7704ef625f5f9f9912f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "1cbcb566ada9652ac3dbb3ccfad07236",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DpLx",
+      "code_hash": "ca1357a7978f98a97f40963c537f4693",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Fzhj",
+      "code_hash": "7ff7440b89d5d76f46dbb37f431a4fcc",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ppmJ",
+      "code_hash": "488cd2a5425ba00ea48b8d7bcd6b4693",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NuLo",
+      "code_hash": "0c8d7a759ee616480e6d2a262276c988",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLOY",
+      "code_hash": "efe4bd22e01ea785c5449b43ccae79bf",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lreI",
+      "code_hash": "f6b38b35557e3e98067a6ebe6d2fc9d5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "IEqd",
+      "code_hash": "2c74bf199f900c025c43f30200151041",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

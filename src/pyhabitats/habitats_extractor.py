@@ -13,7 +13,7 @@ from .types import ClusterAlgorithm
 
 
 class HabitatsExtractor:
-    """Class that extracts habitats from image."""
+    """Class that finds habitats in medical image."""
 
     def __init__(self) -> None:
         self._supported_algorithms = ["kmeans", "agglomerative"]

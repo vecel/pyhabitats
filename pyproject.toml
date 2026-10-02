@@ -1,6 +1,6 @@
 [project]
 name = "pyhabitats"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -27,6 +27,9 @@ version_scheme = "pep440"
 version_provider = "uv"
 update_changelog_on_bump = true
 breaking_change_exclamation_in_title = true
+
+[tool.ruff]
+extend-exclude = ["tests", "app/"]
 
 [tool.ruff.lint]
 extend-select = ["ANN"]

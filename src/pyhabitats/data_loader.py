@@ -25,9 +25,9 @@ class DataLoader:
             filepath: Path to the image file or directory of images.
 
         Returns:
-            A numpy array representing the loaded image(s).
+            A numpy array representing the loaded image(s). Values inside the array
+            represent features used for clustering.
         """
-        # TODO: Add docs that array elements are features the algorithm is run on
         path = Path(filepath)
 
         if not path.exists():
