@@ -21,6 +21,18 @@ def directory(tmp_path: pytest.TempPathFactory) -> str:
 
     return str(directory)
 
+def test_raises_error_when_file_does_not_exist(loader: DataLoader, tmp_path: pytest.TempPathFactory) -> None:
+    missing_path = tmp_path / "does_not_exist.jpg"
+    
+    with pytest.raises(FileNotFoundError, match="File not found"):
+        loader.load(missing_path)
+
+def test_raises_error_when_directory_is_empty(loader: DataLoader, tmp_path: pytest.TempPathFactory) -> None:
+    empty_directory = tmp_path / "empty_dir"
+    empty_directory.mkdir()
+
+    with pytest.raises(FileNotFoundError, match="No files found in directory"):
+        loader.load(empty_directory)
 
 def test_stacks_2d_arrays(
     loader: DataLoader, mocker: pytest.Mock, directory: str
