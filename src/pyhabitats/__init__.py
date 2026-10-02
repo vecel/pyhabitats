@@ -1,2 +1,3 @@
-def main() -> None:
-    print("Hello from pyhabitats!")
+from .habitats_extractor import HabitatsExtractor
+
+__all__ = ["HabitatsExtractor"]
