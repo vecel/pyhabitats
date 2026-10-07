@@ -17,6 +17,7 @@ class HabitatsExtractor:
 
     def __init__(self) -> None:
         self._supported_algorithms = ["kmeans", "agglomerative"]
+        self._loader = DataLoader()
 
     def execute(
         self,
@@ -44,19 +45,29 @@ class HabitatsExtractor:
             If habitats_number is 1, the method returns a list containing mask given
             as input.
         """
-        if isinstance(image_input, str) and isinstance(mask_input, str):
-            loader = DataLoader()
-            image = loader.load(image_input)
-            mask = loader.load(mask_input)
+        if not isinstance(image_input, (str, np.ndarray)):
+            raise TypeError(
+                f"image_input must be a string representing a file path or a numpy array, got {type(image_input)}"
+            )
 
-        if isinstance(image_input, np.ndarray) and isinstance(mask_input, np.ndarray):
-            image = image_input
-            mask = mask_input
+        if not isinstance(mask_input, (str, np.ndarray)):
+            raise TypeError(
+                f"mask_input must be a string representing a file path or a numpy array, got {type(mask_input)}"
+            )
 
-        if isinstance(algorithm, str):
-            alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
-        elif isinstance(algorithm, ClusterAlgorithm):
-            alg = algorithm
+        if not isinstance(habitats_number, int) or isinstance(habitats_number, bool):
+            raise TypeError(
+                f"habitats_number must be an integer, got {type(habitats_number)}"
+            )
+
+        if not isinstance(algorithm, (str, ClusterAlgorithm)):
+            raise TypeError(
+                f"algorithm must be a string from {self._supported_algorithms} or an instance of ClusterAlgorithm, got {type(algorithm)}"
+            )
+
+        image = self._get_image_from_input(image_input)
+        mask = self._get_image_from_input(mask_input)
+        alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
 
         alg.fit(image[mask > 128])
 
@@ -72,8 +83,13 @@ class HabitatsExtractor:
 
         return habitats
 
+    def _get_image_from_input(self, input: str | np.ndarray) -> np.ndarray:
+        if isinstance(input, str):
+            return self._loader.load(input)
+        return input
+
     def _get_algorithm(
-        self, algorithm: str, **kwargs: dict[str, int]
+        self, algorithm: str | ClusterAlgorithm, **kwargs: dict[str, int]
     ) -> ClusterAlgorithm:
         """Returns the clustering algorithm based on the provided string.
 
@@ -83,6 +99,9 @@ class HabitatsExtractor:
         Returns:
             An instance of the specified clustering algorithm.
         """
+        if isinstance(algorithm, ClusterAlgorithm):
+            return algorithm
+
         if algorithm == "kmeans":
             return KMeans(n_clusters=kwargs.get("n_clusters", 2))
         elif algorithm == "agglomerative":

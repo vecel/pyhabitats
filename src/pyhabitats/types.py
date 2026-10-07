@@ -1,12 +1,13 @@
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 
 
+@runtime_checkable
 class ClusterAlgorithm(Protocol):
     """
-    Protocol for clustering algorithms supporting .fit() and .labels_.
-    Matches sklearn clusterers and custom implementations.
+    Protocol for clustering algorithms supporting .fit() method and .labels_
+    property.
     """
 
     labels_: np.ndarray
