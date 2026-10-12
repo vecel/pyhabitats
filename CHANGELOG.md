@@ -1,3 +1,17 @@
+## 0.4.0 (2026-10-12)
+
+### Feat
+
+- add mask binarization
+
+### Fix
+
+- remove arrays concatenation in favour of stacking
+
+### Refactor
+
+- check arguments types validity
+
 ## 0.3.0 (2026-10-02)
 
 ### Feat
