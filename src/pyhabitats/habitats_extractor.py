@@ -75,11 +75,12 @@ class HabitatsExtractor:
         mask = self._binarize_mask(mask, binarization_method)
         alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
 
-        alg.fit(image[mask == 1].reshape(-1, 1))
+        features_number = image.shape[-1] if image.ndim > 3 else 1
+        alg.fit(image[mask == 1].reshape(-1, features_number))
 
         habitats = []
 
-        labels = np.full_like(image, -1, dtype=int)
+        labels = np.full_like(mask, -1, dtype=int)
         labels[mask == 1] = alg.labels_
 
         for i in range(habitats_number):
