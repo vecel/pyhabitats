@@ -15,6 +15,10 @@ def image_fixture() -> np.ndarray:
 def mask_fixture() -> np.ndarray:
     return np.array([[1, 0], [0, 1]])
 
+@pytest.fixture
+def grayscale_mask_fixture() -> np.ndarray:
+    return np.array([[0, 3], [255, 254]])
+
 
 @pytest.mark.parametrize("invalid_image", [123, None, [], {}, set()])
 def test_raises_type_error_when_image_input_has_invalid_type(extractor, invalid_image, mask_fixture):
@@ -64,3 +68,27 @@ def test_provides_supported_algorithms_list_when_algorithm_is_not_supported(extr
             habitats_number=3,
             algorithm="unsupported_algorithm"
         )
+
+def test_binarizes_mask_with_positive_method(extractor, image_fixture, grayscale_mask_fixture):
+    habitats = extractor.execute(
+        image_input=image_fixture,
+        mask_input=grayscale_mask_fixture,
+        habitats_number=1,
+        algorithm="kmeans",
+        binarization_method="positive"
+    )
+
+    assert len(habitats) == 1
+    assert np.array_equal(habitats[0], np.array([[0, 1], [1, 1]]))
+
+def test_binarizes_mask_with_threshold_method(extractor, image_fixture, grayscale_mask_fixture):
+    habitats = extractor.execute(
+        image_input=image_fixture,
+        mask_input=grayscale_mask_fixture,
+        habitats_number=1,
+        algorithm="kmeans",
+        binarization_method="threshold"
+    )
+
+    assert len(habitats) == 1
+    assert np.array_equal(habitats[0], np.array([[0, 0], [1, 1]]))
