@@ -5,6 +5,8 @@ for identifying and extracting habitat regions using input image and mask
 data.
 """
 
+from typing import Literal
+
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, KMeans
 
@@ -26,7 +28,7 @@ class HabitatsExtractor:
         mask_input: str | np.ndarray,
         habitats_number: int,
         algorithm: str | ClusterAlgorithm,
-        binarization_method: str = "non-zero",
+        binarization_method: Literal["positive", "threshold"] = "positive",
     ) -> list[np.ndarray]:
         """Extracts habitats from image and mask.
 
@@ -73,15 +75,15 @@ class HabitatsExtractor:
         mask = self._binarize_mask(mask, binarization_method)
         alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
 
-        alg.fit(mask)
+        alg.fit(image[mask == 1].reshape(-1, 1))
 
         habitats = []
 
-        labels = np.full(image.shape[:2], -1, dtype=np.int32)
-        labels[mask] = alg.labels_
+        labels = np.full_like(image, -1, dtype=int)
+        labels[mask == 1] = alg.labels_
 
         for i in range(habitats_number):
-            habitat_mask = (labels == i) * 255
+            habitat_mask = (labels == i) * 1
             habitat_mask = habitat_mask.astype(np.uint8)
             habitats.append(habitat_mask)
 
@@ -125,9 +127,12 @@ class HabitatsExtractor:
         Returns:
             A binarized version of the input mask.
         """
-        if method == "non-zero":
-            return (mask != 0).astype(np.uint8)
+        if method == "positive":
+            return (mask > 0).astype(np.uint8)
+        elif method == "threshold":
+            threshold = np.max(mask) / 2
+            return (mask > threshold).astype(np.uint8)
         else:
             raise ValueError(
-                f"Unsupported method: {method}. Supported methods are: ['non-zero']"
+                f"Unsupported method: {method}. Supported methods are: ['positive', 'threshold']"
             )
