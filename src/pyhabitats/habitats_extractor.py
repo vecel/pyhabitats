@@ -12,6 +12,7 @@ from .data_loader import DataLoader
 from .types import ClusterAlgorithm
 
 
+# TODO: Adjust clusterization methods for 3d and 4d data.
 class HabitatsExtractor:
     """Class that finds habitats in medical image."""
 
@@ -25,6 +26,7 @@ class HabitatsExtractor:
         mask_input: str | np.ndarray,
         habitats_number: int,
         algorithm: str | ClusterAlgorithm,
+        binarization_method: str = "non-zero",
     ) -> list[np.ndarray]:
         """Extracts habitats from image and mask.
 
@@ -38,6 +40,7 @@ class HabitatsExtractor:
             mask_input: Path to the mask or a numpy array representing the mask.
             habitats_number: Number of habitats to extract.
             algorithm: Clusterization algorithm used for extraction.
+            binarization_method: Method used for binarizing the mask.
 
         Returns:
             A list of numpy arrays, each representing a binary mask for one habitat.
@@ -67,14 +70,15 @@ class HabitatsExtractor:
 
         image = self._get_image_from_input(image_input)
         mask = self._get_image_from_input(mask_input)
+        mask = self._binarize_mask(mask, binarization_method)
         alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
 
-        alg.fit(image[mask > 128])
+        alg.fit(mask)
 
         habitats = []
 
         labels = np.full(image.shape[:2], -1, dtype=np.int32)
-        labels[mask > 128] = alg.labels_
+        labels[mask] = alg.labels_
 
         for i in range(habitats_number):
             habitat_mask = (labels == i) * 255
@@ -109,4 +113,21 @@ class HabitatsExtractor:
         else:
             raise ValueError(
                 f"Unsupported algorithm: {algorithm}. Supported algorithms are: {self._supported_algorithms}"
+            )
+
+    def _binarize_mask(self, mask: np.ndarray, method: str) -> np.ndarray:
+        """Binarizes the input mask.
+
+        Args:
+            mask: A numpy array representing the mask.
+            method: Method used for binarizing the mask.
+
+        Returns:
+            A binarized version of the input mask.
+        """
+        if method == "non-zero":
+            return (mask != 0).astype(np.uint8)
+        else:
+            raise ValueError(
+                f"Unsupported method: {method}. Supported methods are: ['non-zero']"
             )
