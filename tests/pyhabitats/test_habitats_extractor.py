@@ -19,6 +19,13 @@ def mask_fixture() -> np.ndarray:
 def grayscale_mask_fixture() -> np.ndarray:
     return np.array([[0, 3], [255, 254]])
 
+@pytest.fixture
+def high_dimensional_image_fixture() -> np.ndarray:
+    return np.arange(24).reshape((2, 3, 2, 2))
+
+@pytest.fixture
+def high_dimensional_mask_fixture() -> np.ndarray:
+    return np.ones((2, 3, 2))
 
 @pytest.mark.parametrize("invalid_image", [123, None, [], {}, set()])
 def test_raises_type_error_when_image_input_has_invalid_type(extractor, invalid_image, mask_fixture):
@@ -92,3 +99,16 @@ def test_binarizes_mask_with_threshold_method(extractor, image_fixture, grayscal
 
     assert len(habitats) == 1
     assert np.array_equal(habitats[0], np.array([[0, 0], [1, 1]]))
+
+def test_fits_algorithm_on_high_dimensional_features(extractor, high_dimensional_image_fixture, high_dimensional_mask_fixture):
+    habitats = extractor.execute(
+        image_input=high_dimensional_image_fixture,
+        mask_input=high_dimensional_mask_fixture,
+        habitats_number=2,
+        algorithm="kmeans",
+        binarization_method="positive"
+    )
+
+    assert len(habitats) == 2
+    assert habitats[0].shape == high_dimensional_mask_fixture.shape
+    assert habitats[1].shape == high_dimensional_mask_fixture.shape
