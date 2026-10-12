@@ -44,10 +44,7 @@ class DataLoader:
 
             arrays = [self._read_file(str(file)) for file in files]
 
-            if arrays[0].ndim == 2:
-                return np.stack(arrays, axis=-1)
-            else:
-                return np.concatenate(arrays, axis=-1)
+            return np.stack(arrays, axis=-1)
 
     def _read_file(self, filepath: str) -> np.ndarray:
         image = sitk.ReadImage(filepath)
