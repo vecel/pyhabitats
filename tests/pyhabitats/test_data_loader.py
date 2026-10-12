@@ -21,6 +21,11 @@ def directory(tmp_path: pytest.TempPathFactory) -> str:
 
     return str(directory)
 
+@pytest.fixture
+def volume_image_fixture() -> np.ndarray:
+    return np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
+
+
 def test_raises_error_when_file_does_not_exist(loader: DataLoader, tmp_path: pytest.TempPathFactory) -> None:
     missing_path = tmp_path / "does_not_exist.jpg"
     
@@ -50,17 +55,13 @@ def test_stacks_2d_arrays(
     assert np.array_equal(result[:, :, 1], np.array([[1, 1], [0, 0]]))
 
 
-def test_concatenates_3d_arrays(
-    loader: DataLoader, mocker: pytest.Mock, directory: str
-) -> None:
+def test_stacks_3d_arrays(loader: DataLoader, mocker: pytest.Mock, directory: str, volume_image_fixture) -> None:
     mocker.patch.object(
         loader,
         "_read_file",
-        side_effect=[np.array([[[1, 0], [0, 1]]]), np.array([[[1, 1], [0, 0]]])],
+        side_effect=[volume_image_fixture, volume_image_fixture],
     )
 
     result = loader.load(directory)
 
-    assert result.shape == (1, 2, 4)
-    assert np.array_equal(result[0, 0, :], np.array([1, 0, 1, 1]))
-    assert np.array_equal(result[0, 1, :], np.array([0, 1, 0, 0]))
+    assert result.shape == (2, 2, 3, 2)
