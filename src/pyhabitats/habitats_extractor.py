@@ -5,13 +5,11 @@ for identifying and extracting habitat regions using input image and mask
 data.
 """
 
-from typing import Literal
-
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, KMeans
 
-from .data_loader import DataLoader
-from .types import ClusterAlgorithm
+from .clustering_algorithm import ClusteringAlgorithm
+from .image_loader import ImageLoader
 
 
 # TODO: Adjust clusterization methods for 3d and 4d data.
@@ -20,16 +18,15 @@ class HabitatsExtractor:
 
     def __init__(self) -> None:
         self._supported_algorithms = ["kmeans", "agglomerative"]
-        self._loader = DataLoader()
+        self._loader = ImageLoader()
 
     def execute(
         self,
-        image_input: str | np.ndarray,
-        mask_input: str | np.ndarray,
+        image_input: np.ndarray,
+        mask_input: np.ndarray,
         habitats_number: int,
-        algorithm: str | ClusterAlgorithm,
-        binarization_method: Literal["positive", "threshold"] = "positive",
-    ) -> list[np.ndarray]:
+        algorithm: str | ClusteringAlgorithm,
+    ) -> np.ndarray:
         """Extracts habitats from image and mask.
 
         Applies a specified clustering algorithm to the region of the input image
@@ -65,14 +62,13 @@ class HabitatsExtractor:
                 f"habitats_number must be an integer, got {type(habitats_number)}"
             )
 
-        if not isinstance(algorithm, (str, ClusterAlgorithm)):
+        if not isinstance(algorithm, (str, ClusteringAlgorithm)):
             raise TypeError(
-                f"algorithm must be a string from {self._supported_algorithms} or an instance of ClusterAlgorithm, got {type(algorithm)}"
+                f"algorithm must be a string from {self._supported_algorithms} or an instance of ClusteringAlgorithm, got {type(algorithm)}"
             )
 
         image = self._get_image_from_input(image_input)
         mask = self._get_image_from_input(mask_input)
-        mask = self._binarize_mask(mask, binarization_method)
         alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
 
         features_number = image.shape[-1] if image.ndim > 3 else 1
@@ -92,12 +88,12 @@ class HabitatsExtractor:
 
     def _get_image_from_input(self, input: str | np.ndarray) -> np.ndarray:
         if isinstance(input, str):
-            return self._loader.load(input)
+            return self._loader.load_image(input)
         return input
 
     def _get_algorithm(
-        self, algorithm: str | ClusterAlgorithm, **kwargs: dict[str, int]
-    ) -> ClusterAlgorithm:
+        self, algorithm: str | ClusteringAlgorithm, **kwargs: dict[str, int]
+    ) -> ClusteringAlgorithm:
         """Returns the clustering algorithm based on the provided string.
 
         Args:
@@ -106,7 +102,7 @@ class HabitatsExtractor:
         Returns:
             An instance of the specified clustering algorithm.
         """
-        if isinstance(algorithm, ClusterAlgorithm):
+        if isinstance(algorithm, ClusteringAlgorithm):
             return algorithm
 
         if algorithm == "kmeans":
@@ -116,24 +112,4 @@ class HabitatsExtractor:
         else:
             raise ValueError(
                 f"Unsupported algorithm: {algorithm}. Supported algorithms are: {self._supported_algorithms}"
-            )
-
-    def _binarize_mask(self, mask: np.ndarray, method: str) -> np.ndarray:
-        """Binarizes the input mask.
-
-        Args:
-            mask: A numpy array representing the mask.
-            method: Method used for binarizing the mask.
-
-        Returns:
-            A binarized version of the input mask.
-        """
-        if method == "positive":
-            return (mask > 0).astype(np.uint8)
-        elif method == "threshold":
-            threshold = np.max(mask) / 2
-            return (mask > threshold).astype(np.uint8)
-        else:
-            raise ValueError(
-                f"Unsupported method: {method}. Supported methods are: ['positive', 'threshold']"
             )

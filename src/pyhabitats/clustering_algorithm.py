@@ -4,7 +4,7 @@ import numpy as np
 
 
 @runtime_checkable
-class ClusterAlgorithm(Protocol):
+class ClusteringAlgorithm(Protocol):
     """
     Protocol for clustering algorithms supporting .fit() method and .labels_
     property.

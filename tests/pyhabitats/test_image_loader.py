@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from pyhabitats.data_loader import DataLoader
+from pyhabitats.image_loader import ImageLoader
 
 
 @pytest.fixture
-def loader() -> DataLoader:
-    return DataLoader()
+def loader() -> ImageLoader:
+    return ImageLoader()
 
 
 @pytest.fixture
@@ -26,21 +26,21 @@ def volume_image_fixture() -> np.ndarray:
     return np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
 
 
-def test_raises_error_when_file_does_not_exist(loader: DataLoader, tmp_path: pytest.TempPathFactory) -> None:
+def test_raises_error_when_file_does_not_exist(loader: ImageLoader, tmp_path: pytest.TempPathFactory) -> None:
     missing_path = tmp_path / "does_not_exist.jpg"
     
     with pytest.raises(FileNotFoundError, match="File not found"):
-        loader.load(missing_path)
+        loader.load_image(missing_path)
 
-def test_raises_error_when_directory_is_empty(loader: DataLoader, tmp_path: pytest.TempPathFactory) -> None:
+def test_raises_error_when_directory_is_empty(loader: ImageLoader, tmp_path: pytest.TempPathFactory) -> None:
     empty_directory = tmp_path / "empty_dir"
     empty_directory.mkdir()
 
     with pytest.raises(FileNotFoundError, match="No files found in directory"):
-        loader.load(empty_directory)
+        loader.load_image(empty_directory)
 
 def test_stacks_2d_arrays(
-    loader: DataLoader, mocker: pytest.Mock, directory: str
+    loader: ImageLoader, mocker: pytest.Mock, directory: str
 ) -> None:
     mocker.patch.object(
         loader,
@@ -48,20 +48,20 @@ def test_stacks_2d_arrays(
         side_effect=[np.array([[1, 0], [0, 1]]), np.array([[1, 1], [0, 0]])],
     )
 
-    result = loader.load(directory)
+    result = loader.load_image(directory)
 
     assert result.shape == (2, 2, 2)
     assert np.array_equal(result[:, :, 0], np.array([[1, 0], [0, 1]]))
     assert np.array_equal(result[:, :, 1], np.array([[1, 1], [0, 0]]))
 
 
-def test_stacks_3d_arrays(loader: DataLoader, mocker: pytest.Mock, directory: str, volume_image_fixture) -> None:
+def test_stacks_3d_arrays(loader: ImageLoader, mocker: pytest.Mock, directory: str, volume_image_fixture) -> None:
     mocker.patch.object(
         loader,
         "_read_file",
         side_effect=[volume_image_fixture, volume_image_fixture],
     )
 
-    result = loader.load(directory)
+    result = loader.load_image(directory)
 
     assert result.shape == (2, 2, 3, 2)

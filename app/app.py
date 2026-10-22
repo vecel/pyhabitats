@@ -14,9 +14,9 @@ def _():
     from PIL import Image
 
     from pyhabitats import HabitatsExtractor
-    from pyhabitats.data_loader import DataLoader
+    from pyhabitats.image_loader import ImageLoader
 
-    return DataLoader, HabitatsExtractor, Image, mo, np, os, tempfile
+    return ImageLoader, HabitatsExtractor, Image, mo, np, os, tempfile
 
 
 @app.cell
