@@ -26,8 +26,8 @@ class HabitatsExtractor:
 
     def execute(
         self,
-        image_input: np.ndarray,
-        mask_input: np.ndarray,
+        image: np.ndarray,
+        mask: np.ndarray,
         habitats_number: int,
         algorithm: str | ClusterAlgorithm,
     ) -> np.ndarray:
@@ -38,8 +38,8 @@ class HabitatsExtractor:
         requested number of classes and generates a mask for each resulting cluster.
 
         Args:
-            image_input (np.ndarray): A numpy array representing the image.
-            mask_input (np.ndarray): A numpy array representing the mask. Must be
+            image (np.ndarray): A numpy array representing the image.
+            mask (np.ndarray): A numpy array representing the mask. Must be
                 binary.
             habitats_number (int): Number of habitats to extract. If set to 1, provided
                 mask will be returned as output.
@@ -50,6 +50,8 @@ class HabitatsExtractor:
             np.ndarray: A numpy array with extracted habitats. Each habitat is identified
                 by positive, integer value 1, 2, 3 and so on. Background is identifed by value 0.
         """
+        image_input = None
+        mask_input = None
         if not isinstance(image_input, (str, np.ndarray)):
             raise TypeError(
                 f"image_input must be a string representing a file path or a numpy array, got {type(image_input)}"

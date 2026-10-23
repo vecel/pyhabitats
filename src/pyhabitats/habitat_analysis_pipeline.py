@@ -41,17 +41,17 @@ class HabitatAnalysisPipeline:
 
     def execute(
         self,
-        image_input: str,
-        mask_input: str,
+        image_path: str,
+        mask_path: str,
         habitats_number: int,
         algorithm: str | ClusterAlgorithm,
     ) -> pd.DataFrame:
         """Executes the habitat analysis pipeline on the provided image and mask.
 
         Args:
-            image_input (str): Path to the file or directory containing input image
+            image_path (str): Path to the file or directory containing input image
                 (images).
-            mask_input (str): Path to the input mask file. Mask must be binary and
+            mask_path (str): Path to the input mask file. Mask must be binary and
                 contain only zero and one values for, respectively, backgroud and
                 region of interest.
             habitats_number (int): Number of habitats to identify. Must be positive.

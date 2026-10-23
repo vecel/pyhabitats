@@ -26,7 +26,7 @@ class FeaturesExtractor:
     def __init__(self, params: dict | None = None) -> None:
         self.params = params
 
-    def execute(self, image_input: np.ndarray, mask_input: np.ndarray) -> pd.DataFrame:
+    def execute(self, image: np.ndarray, mask: np.ndarray) -> pd.DataFrame:
         """Executes the feature extraction process on the given image and mask.
 
         Initializes the pyradiomics extractor, runs the extraction
@@ -34,8 +34,8 @@ class FeaturesExtractor:
         the computed features into a single DataFrame.
 
         Args:
-            image_input (np.ndarray): An input image array.
-            mask_input (np.ndarray): An input mask array defining the habitat regions.
+            image (np.ndarray): An input image array.
+            mask (np.ndarray): An input mask array defining the habitat regions.
                 Must contain integer values where 0 represents background and positive
                 values represent habitats.
 
