@@ -1,3 +1,13 @@
+## 0.5.0 (2026-10-23)
+
+### Feat
+
+- **api**: define public API contract
+
+### Fix
+
+- fix multidimensional features
+
 ## 0.4.0 (2026-10-12)
 
 ### Feat
