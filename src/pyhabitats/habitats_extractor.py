@@ -8,13 +8,17 @@ data.
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, KMeans
 
-from .clustering_algorithm import ClusteringAlgorithm
+from .cluster_algorithm import ClusterAlgorithm
 from .image_loader import ImageLoader
 
 
-# TODO: Adjust clusterization methods for 3d and 4d data.
 class HabitatsExtractor:
-    """Class that finds habitats in medical image."""
+    """Extractor for identifying distinct habitats from image.
+
+    This class allows to specify number of habitats and clusterization algorithm
+    used during extraction. Supports predefined algorithms and custom ones compatible
+    with `ClusterAlgorithm` type.
+    """
 
     def __init__(self) -> None:
         self._supported_algorithms = ["kmeans", "agglomerative"]
@@ -25,27 +29,26 @@ class HabitatsExtractor:
         image_input: np.ndarray,
         mask_input: np.ndarray,
         habitats_number: int,
-        algorithm: str | ClusteringAlgorithm,
+        algorithm: str | ClusterAlgorithm,
     ) -> np.ndarray:
-        """Extracts habitats from image and mask.
+        """Identifies habitats in image.
 
         Applies a specified clustering algorithm to the region of the input image
         defined by the provided mask. It partitions the masked pixels into the
-        requested number of classes and generates a separate binary mask for each
-        resulting cluster.
+        requested number of classes and generates a mask for each resulting cluster.
 
         Args:
-            image_input: Path to the image or a numpy array representing the image.
-            mask_input: Path to the mask or a numpy array representing the mask.
-            habitats_number: Number of habitats to extract.
-            algorithm: Clusterization algorithm used for extraction.
-            binarization_method: Method used for binarizing the mask.
+            image_input (np.ndarray): A numpy array representing the image.
+            mask_input (np.ndarray): A numpy array representing the mask. Must be
+                binary.
+            habitats_number (int): Number of habitats to extract. If set to 1, provided
+                mask will be returned as output.
+            algorithm (str | ClusterAlgorithm): Clusterization algorithm used for
+                extraction.
 
         Returns:
-            A list of numpy arrays, each representing a binary mask for one habitat.
-
-            If habitats_number is 1, the method returns a list containing mask given
-            as input.
+            np.ndarray: A numpy array with extracted habitats. Each habitat is identified
+                by positive, integer value 1, 2, 3 and so on. Background is identifed by value 0.
         """
         if not isinstance(image_input, (str, np.ndarray)):
             raise TypeError(
@@ -62,9 +65,9 @@ class HabitatsExtractor:
                 f"habitats_number must be an integer, got {type(habitats_number)}"
             )
 
-        if not isinstance(algorithm, (str, ClusteringAlgorithm)):
+        if not isinstance(algorithm, (str, ClusterAlgorithm)):
             raise TypeError(
-                f"algorithm must be a string from {self._supported_algorithms} or an instance of ClusteringAlgorithm, got {type(algorithm)}"
+                f"algorithm must be a string from {self._supported_algorithms} or an instance of ClusterAlgorithm, got {type(algorithm)}"
             )
 
         image = self._get_image_from_input(image_input)
@@ -92,8 +95,8 @@ class HabitatsExtractor:
         return input
 
     def _get_algorithm(
-        self, algorithm: str | ClusteringAlgorithm, **kwargs: dict[str, int]
-    ) -> ClusteringAlgorithm:
+        self, algorithm: str | ClusterAlgorithm, **kwargs: dict[str, int]
+    ) -> ClusterAlgorithm:
         """Returns the clustering algorithm based on the provided string.
 
         Args:
@@ -102,7 +105,7 @@ class HabitatsExtractor:
         Returns:
             An instance of the specified clustering algorithm.
         """
-        if isinstance(algorithm, ClusteringAlgorithm):
+        if isinstance(algorithm, ClusterAlgorithm):
             return algorithm
 
         if algorithm == "kmeans":

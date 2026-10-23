@@ -11,7 +11,7 @@ import SimpleITK as sitk
 
 
 class ImageLoader:
-    """Class that loads medical images from disk.
+    """Medical images loader.
 
     It can load files supported by SimpleITK (e.g. .nii, .nrrd, .jpg). Handles
     both single image files and directories containing multiple images. In the
@@ -19,14 +19,14 @@ class ImageLoader:
     """
 
     def load_image(self, image_path: str) -> np.ndarray:
-        """Loads image from file or directory.
+        """Loads image from a file or directory.
 
         Args:
-            filepath: Path to the image file or directory of images.
+            image_path (str): Path to the image file or a directory of images.
 
         Returns:
-            A numpy array representing the loaded image(s). Values inside the array
-            represent features used for clustering.
+            np.ndarray: A numpy array representing the loaded image(s). Values
+                inside the array represent features used in clusterization.
         """
         path = Path(image_path)
 
