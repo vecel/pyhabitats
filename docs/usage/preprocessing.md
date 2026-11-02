@@ -1,0 +1,1 @@
+# Preparing images for habitats extraction
