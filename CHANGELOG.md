@@ -1,3 +1,9 @@
+## 0.5.1 (2026-11-02)
+
+### Refactor
+
+- **api**: rename public API method parameters
+
 ## 0.5.0 (2026-10-23)
 
 ### Feat
