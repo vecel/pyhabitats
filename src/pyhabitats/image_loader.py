@@ -13,8 +13,8 @@ import SimpleITK as sitk
 class ImageLoader:
     """Medical images loader.
 
-    It can load files supported by SimpleITK (e.g. .nii, .nrrd, .jpg). Handles
-    both single image files and directories containing multiple images. In the
+    Loads files supported by SimpleITK (e.g. .nii, .nrrd, .jpg). Handles both
+    single image files and directories containing multiple images. In the
     case of multiple images, loader stacks them into single numpy array.
     """
 
@@ -34,19 +34,34 @@ class ImageLoader:
             raise FileNotFoundError(f"File not found: {image_path}")
 
         if path.is_file():
-            return self._read_file(str(path))
+            return self._read_file(path)
 
         if path.is_dir():
-            files = sorted([f for f in path.iterdir() if f.is_file()])
+            return self._read_directory(path)
 
-            if not files:
-                raise FileNotFoundError(f"No files found in directory: {image_path}")
+    def _read_file(self, filepath: Path) -> np.ndarray:
+        try:
+            image = sitk.ReadImage(str(filepath))
+            array = sitk.GetArrayFromImage(image)
+            return array
+        except RuntimeError as e:
+            raise ValueError(f"Failed to read image file: {filepath}. Error: {e}")
 
-            arrays = [self._read_file(str(file)) for file in files]
+    def _read_directory(self, directory: Path) -> np.ndarray:
+        files = sorted([f for f in directory.iterdir() if f.is_file()])
 
+        if not files:
+            raise FileNotFoundError(f"No files found in directory: {directory}")
+
+        arrays = [self._read_file(str(file)) for file in files]
+
+        if len(arrays) == 1:
+            # Add a message that only one file was found and is read as single image
+            return arrays[0]
+
+        try:
             return np.stack(arrays, axis=-1)
-
-    def _read_file(self, filepath: str) -> np.ndarray:
-        image = sitk.ReadImage(filepath)
-        array = sitk.GetArrayFromImage(image)
-        return array
+        except ValueError:
+            raise ValueError(
+                f"All input images must have the same shape. Found shapes: {', '.join(str(arr.shape) for arr in arrays)}."
+            )
