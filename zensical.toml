@@ -119,5 +119,6 @@ paths = ["src"]
 modules = ["src/pyhabitats"]
 exclude = ["re:^pyhabitats$"]
 nav_item_prefix = ""
+nav_section_title = "API reference"
 
 
