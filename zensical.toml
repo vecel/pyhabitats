@@ -112,6 +112,9 @@ pymdownx.tilde = {}
 
 [project.plugins.mkdocstrings]
 
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
 [project.plugins.api-autonav]
 modules = ["src/pyhabitats"]
 exclude = ["re:^pyhabitats$"]
