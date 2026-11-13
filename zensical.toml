@@ -18,7 +18,7 @@ nav = [
     "usage/preprocessing.md",
     "usage/configuration.md",
   ] },
-  { "API Reference" = [] },
+  { "API reference" = [] },
   { "Release notes" = [] },
 ]
 
