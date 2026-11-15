@@ -22,14 +22,16 @@ class HabitatsExtractor:
 
     def __init__(self) -> None:
         self._supported_algorithms = ["kmeans", "agglomerative"]
+        self._supported_binarizations = ["positive", "threshold"]
         self._loader = ImageLoader()
 
     def execute(
         self,
-        image: np.ndarray,
-        mask: np.ndarray,
+        image_input: np.ndarray,
+        mask_input: np.ndarray,
         habitats_number: int,
         algorithm: str | ClusterAlgorithm,
+        binarization_method: str = "positive",
     ) -> np.ndarray:
         """Identifies habitats in image.
 
@@ -50,8 +52,7 @@ class HabitatsExtractor:
             np.ndarray: A numpy array with extracted habitats. Each habitat is identified
                 by positive, integer value 1, 2, 3 and so on. Background is identifed by value 0.
         """
-        image_input = None
-        mask_input = None
+
         if not isinstance(image_input, (str, np.ndarray)):
             raise TypeError(
                 f"image_input must be a string representing a file path or a numpy array, got {type(image_input)}"
@@ -72,17 +73,20 @@ class HabitatsExtractor:
                 f"algorithm must be a string from {self._supported_algorithms} or an instance of ClusterAlgorithm, got {type(algorithm)}"
             )
 
+        
+
         image = self._get_image_from_input(image_input)
         mask = self._get_image_from_input(mask_input)
+        binary_mask = self._get_binary_mask(mask, binarization_method)
         alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
 
         features_number = image.shape[-1] if image.ndim > 3 else 1
-        alg.fit(image[mask == 1].reshape(-1, features_number))
+        alg.fit(image[binary_mask == 1].reshape(-1, features_number))
 
         habitats = []
 
-        labels = np.full_like(mask, -1, dtype=int)
-        labels[mask == 1] = alg.labels_
+        labels = np.full_like(binary_mask, -1, dtype=int)
+        labels[binary_mask == 1] = alg.labels_
 
         for i in range(habitats_number):
             habitat_mask = (labels == i) * 1
@@ -90,6 +94,17 @@ class HabitatsExtractor:
             habitats.append(habitat_mask)
 
         return habitats
+
+    def _get_binary_mask(self, mask: np.ndarray, method: str) -> np.ndarray:
+        if method == "positive":
+            return (mask > 0).astype(np.uint8)
+        elif method == "threshold":
+            threshold = mask.max() / 2.0
+            return (mask > threshold).astype(np.uint8)
+        else:
+            raise ValueError(
+                f"Unsupported binarization method: {method}. Supported methods are: {self._supported_binarizations}"
+            )
 
     def _get_image_from_input(self, input: str | np.ndarray) -> np.ndarray:
         if isinstance(input, str):
