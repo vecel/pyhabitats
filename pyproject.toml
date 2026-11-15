@@ -6,13 +6,22 @@ readme = "README.md"
 authors = [
     { name = "Mateusz Karandys", email = "mateusz.karandys@gmail.com" }
 ]
-requires-python = ">=3.14"
+# requires-python = ">=3.14"
+requires-python = ">=3.11, <3.12"
+
 dependencies = [
-    "numpy>=2.5.3",
-    "pandas>=3.1.0",
-    "pytest-cov>=7.1.0",
-    "scikit-learn>=1.9.1",
-    "simpleitk>=2.5.6",
+    # "numpy>=2.5.3",
+    # "pandas>=3.1.0",
+    # "pytest-cov>=7.1.0",
+    # "scikit-learn>=1.9.1",
+    # "simpleitk>=2.5.6",
+    
+    "numpy",
+    "pandas",
+    "pytest-cov",
+    "scikit-learn",
+    "simpleitk",
+    "pyradiomics==3.0.1"
 ]
 
 [project.scripts]
@@ -54,4 +63,5 @@ dev = [
     "zensical>=0.0.74",
 ]
 
-
+[tool.uv.extra-build-dependencies]
+pyradiomics = ["numpy", "setuptools", "wheel"]
