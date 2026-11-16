@@ -50,17 +50,11 @@ class HabitatsExtractor:
             np.ndarray: A numpy array with extracted habitats. Each habitat is identified
                 by positive, integer value 1, 2, 3 and so on. Background is identifed by value 0.
         """
-        image_input = None
-        mask_input = None
-        if not isinstance(image_input, (str, np.ndarray)):
-            raise TypeError(
-                f"image_input must be a string representing a file path or a numpy array, got {type(image_input)}"
-            )
+        if not isinstance(image, np.ndarray):
+            raise TypeError(f"image argument must be a numpy array, got {type(image)}")
 
-        if not isinstance(mask_input, (str, np.ndarray)):
-            raise TypeError(
-                f"mask_input must be a string representing a file path or a numpy array, got {type(mask_input)}"
-            )
+        if not isinstance(mask, np.ndarray):
+            raise TypeError(f"mask argument must a numpy array, got {type(mask)}")
 
         if not isinstance(habitats_number, int) or isinstance(habitats_number, bool):
             raise TypeError(
@@ -69,32 +63,41 @@ class HabitatsExtractor:
 
         if not isinstance(algorithm, (str, ClusterAlgorithm)):
             raise TypeError(
-                f"algorithm must be a string from {self._supported_algorithms} or an instance of ClusterAlgorithm, got {type(algorithm)}"
+                f"algorithm must be a string from list: {self._supported_algorithms} or an instance of ClusterAlgorithm, got {type(algorithm)}"
             )
 
-        image = self._get_image_from_input(image_input)
-        mask = self._get_image_from_input(mask_input)
+        self._check_image_and_mask_compatibility(image, mask)
         alg = self._get_algorithm(algorithm, n_clusters=habitats_number)
 
-        features_number = image.shape[-1] if image.ndim > 3 else 1
+        features_number = image.shape[-1] if image.ndim > mask.ndim else 1
         alg.fit(image[mask == 1].reshape(-1, features_number))
 
-        habitats = []
+        habitats = np.zeros_like(mask, dtype=int)
 
-        labels = np.full_like(mask, -1, dtype=int)
-        labels[mask == 1] = alg.labels_
-
-        for i in range(habitats_number):
-            habitat_mask = (labels == i) * 1
-            habitat_mask = habitat_mask.astype(np.uint8)
-            habitats.append(habitat_mask)
+        if hasattr(alg, "labels_"):
+            habitats[mask == 1] = alg.labels_ + 1
+        elif hasattr(alg, "labels"):
+            habitats[mask == 1] = alg.labels + 1
+        else:
+            raise AttributeError(
+                "Did not found neither .labels nor .labels_ attribute for algorithm"
+            )
 
         return habitats
 
-    def _get_image_from_input(self, input: str | np.ndarray) -> np.ndarray:
-        if isinstance(input, str):
-            return self._loader.load_image(input)
-        return input
+    def _check_image_and_mask_compatibility(
+        self, image: np.ndarray, mask: np.ndarray
+    ) -> None:
+        n = mask.ndim
+        if not (image.ndim == mask.ndim or image.ndim == mask.ndim + 1):
+            raise ValueError(
+                f"image must have either same dimensions as mask or one more, got image.ndim={image.ndim}, mask.ndim={mask.ndim}"
+            )
+
+        if image.shape[:n] != mask.shape:
+            raise ValueError(
+                f"image leading dimensions have to match mask dimensions, got mask.shape={mask.shape}, image.shape={image.shape}"
+            )
 
     def _get_algorithm(
         self, algorithm: str | ClusterAlgorithm, **kwargs: dict[str, int]
