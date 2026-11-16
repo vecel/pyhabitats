@@ -41,10 +41,13 @@ def ui_elements(mo):
     habitats_number = mo.ui.number(start=1, stop=6, value=2, label="Number of Habitats")
 
     feature_classes = mo.ui.multiselect(
-        options=["firstorder", "glcm", "glrlm", "glszm", "gldm", "ngtdm", "shape", "shape2D"], 
-        value=["firstorder", "glcm"], 
-        label="Select Features"
-    )
+    options=[
+        "firstorder", "shape", "glcm", "glrlm", "glszm", "gldm", "ngtdm", 
+        "gldzm", "ivh", "local_intensity", "moment_invariants", "diagnostics"
+    ],
+    value=["firstorder", "shape"],
+    label="Wybierz klasy cech:"
+)
 
     return (
         algorithm,
@@ -145,7 +148,8 @@ def processing(
         img_array = loaded_images[0] 
         
         hab_extractor = HabitatsExtractor()
-        habitats_list = hab_extractor.execute(
+        
+        extractor_result = hab_extractor.execute(
             image_input=stacked_image,
             mask_input=mask_array, 
             habitats_number=habitats_number.value, 
@@ -153,22 +157,58 @@ def processing(
             binarization_method=binarization_method.value
         )
         
-        combined_mask = np.zeros_like(mask_array, dtype=np.uint8)
-        for idx, hab_mask in enumerate(habitats_list):
-            combined_mask[hab_mask > 0] = idx + 1
+        if isinstance(extractor_result, list):
+            habitats_list = extractor_result
+            combined_mask = np.zeros_like(mask_array, dtype=np.uint8)
+            for idx, hab_mask in enumerate(habitats_list):
+                combined_mask[hab_mask > 0] = idx + 1
+        else:
+            combined_mask = extractor_result.astype(np.uint8)
+            habitats_list = [(combined_mask == i).astype(np.uint8) for i in np.unique(combined_mask) if i > 0]
             
-        feat_extractor = FeaturesExtractor()
-        
-        if feature_classes.value:
-            feat_extractor._extractor.disableAllFeatures()
+        img_for_sera = np.expand_dims(img_array, axis=0) if img_array.ndim == 2 else img_array
+        mask_for_sera = np.expand_dims(combined_mask, axis=0) if combined_mask.ndim == 2 else combined_mask
             
-            for f_class in feature_classes.value:
-                feat_extractor._extractor.enableFeatureClassByName(f_class)
-                
-        features_df = feat_extractor.execute(img_array, combined_mask)
-        
-    return features_df, habitats_list, img_array, loaded_images
+        params = {}
 
+        feat_extractor = FeaturesExtractor(params=params)
+        features_df = feat_extractor.execute(img_for_sera, mask_for_sera)
+
+        if feature_classes.value and features_df is not None and not features_df.empty:
+                # 4. Mapowanie z Twojego interfejsu (UI) na oficjalne kody PySERA z dokumentacji
+            prefix_map = {
+                "firstorder": "stat",
+                "shape": "morph",
+                "glcm": "glcm",
+                "glrlm": "glrlm",
+                "glszm": "glszm",
+                "gldm": "ngldm",              
+                "ngtdm": "ngtdm",
+                "moment_invariants": "mi",    
+                "diagnostics": "diag",       
+                "gldzm": "gldzm",
+                "ivh": "ivh",
+                "local_intensity": "local"
+            }
+            
+            if feature_classes.value:
+                selected_cats = [prefix_map.get(fc.lower(), fc.lower()) for fc in feature_classes.value]
+            else:
+                selected_cats = list(prefix_map.values()) 
+                
+            categories_str = ", ".join(selected_cats)
+            
+            params = {
+                "categories": categories_str,
+                "dimensions": "1st, 2D, 2_5D, 3D", 
+                "extraction_mode": "handcrafted_feature"
+            }
+                
+            feat_extractor = FeaturesExtractor(params=params)
+            features_df = feat_extractor.execute(img_for_sera, mask_for_sera)
+            
+            
+    return features_df, habitats_list, img_array, loaded_images
 
 @app.cell
 def dynamic_slider(img_array, mo):
