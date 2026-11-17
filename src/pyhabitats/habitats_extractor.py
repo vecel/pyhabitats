@@ -54,7 +54,7 @@ class HabitatsExtractor:
             raise TypeError(f"image argument must be a numpy array, got {type(image)}")
 
         if not isinstance(mask, np.ndarray):
-            raise TypeError(f"mask argument must a numpy array, got {type(mask)}")
+            raise TypeError(f"mask argument must be a numpy array, got {type(mask)}")
 
         if not isinstance(habitats_number, int) or isinstance(habitats_number, bool):
             raise TypeError(
