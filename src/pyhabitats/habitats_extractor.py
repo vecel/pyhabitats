@@ -22,16 +22,13 @@ class HabitatsExtractor:
 
     def __init__(self) -> None:
         self._supported_algorithms = ["kmeans", "agglomerative"]
-        self._supported_binarizations = ["positive", "threshold"]
-        self._loader = ImageLoader()
 
     def execute(
         self,
-        image_input: np.ndarray,
-        mask_input: np.ndarray,
+        image: np.ndarray,
+        mask: np.ndarray,
         habitats_number: int,
         algorithm: str | ClusterAlgorithm,
-        binarization_method: str = "positive",
     ) -> np.ndarray:
         """Identifies habitats in image.
 
