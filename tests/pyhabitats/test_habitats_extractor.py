@@ -38,7 +38,7 @@ def test_raises_type_error_when_image_input_has_invalid_type(extractor, invalid_
 
 @pytest.mark.parametrize("invalid_mask", [123, None, [], {}, set()])
 def test_raises_type_error_when_mask_input_has_invalid_type(extractor, image_fixture, invalid_mask):
-    with pytest.raises(TypeError, match="mask argument must a numpy array"):
+    with pytest.raises(TypeError, match="mask argument must be a numpy array"):
         extractor.execute(
             image=image_fixture,
             mask=invalid_mask,
